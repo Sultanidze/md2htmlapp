@@ -1,10 +1,13 @@
 {
   "name": "firesale",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "app/main.js",
   "repository": "https://github.com/Sultanidze/md2htmlapp",
   "author": "Sultanidze",
   "license": "MIT",
+  "scripts": {
+    "start": "electron ."
+  },
   "dependencies": {
     "electron": "^5.0.0",
     "marked": "^0.6.2"
