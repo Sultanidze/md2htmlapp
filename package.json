@@ -2,11 +2,11 @@
   "name": "firesale",
   "version": "1.0.0",
   "main": "index.js",
-  "repository": "https://github.com/electron-in-action/firesale.git",
-  "author": "Steve Kinney <hello@stevekinney.net> (http://stevekinney.net)",
+  "repository": "https://github.com/Sultanidze/md2htmlapp",
+  "author": "Sultanidze",
   "license": "MIT",
   "dependencies": {
-    "electron": "^1.7.10",
-    "marked": "^0.3.12"
+    "electron": "^5.0.0",
+    "marked": "^0.6.2"
   }
 }
