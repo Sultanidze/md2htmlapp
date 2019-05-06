@@ -1,5 +1,6 @@
-const { remote, ipcRenderer } = require('electron');
+const { remote, ipcRenderer} = require('electron');
 const main = remote.require('./main');
+const currentWindow = remote.getCurrentWindow();
 const marked = require('marked');
 
 const markdownView = document.querySelector('#markdown');
@@ -21,7 +22,10 @@ markdownView.addEventListener('keyup', (event) => {
     renderMarkdownToHtml(currentContent);
 });
 openFileButton.addEventListener('click', () => {
-    main.getFileFromUser();
+    main.getFileFromUser(currentWindow);
+});
+newFileButton.addEventListener('click', () => {
+    main.createWindow();
 });
 ipcRenderer.on('file-opened', (e, file, content) => {
     console.log('"file-open" event in renderer')
