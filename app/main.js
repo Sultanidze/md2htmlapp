@@ -63,7 +63,7 @@ app.on('ready', () => {
     createWindow();
 })
 
-// iOS specific: not close app if all windows are closed
+// macOs specific: not close app if all windows are closed
 app.on('window-all-closed', () => {
     if (process.platform === 'darwin') {
         return false;
