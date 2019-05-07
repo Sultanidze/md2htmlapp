@@ -31,6 +31,9 @@ const updateUserInterface = (isEdited) => {
     
     currentWindow.setDocumentEdited(isEdited); // macOS
     currentWindow.setTitle(`${title}`);
+
+    saveMarkdownButton.disabled = !isEdited;
+    revertButton.disabled = !isEdited;
 }
 
 const renderMarkdownToHtml = (markdown) => {

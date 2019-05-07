@@ -21,6 +21,7 @@ const openFile = (targetWindow, files) => {
     const file = files[0];
     const content = fs.readFileSync(file).toString();
 
+    targetWindow.setRepresentedFilename(file); // macOS file edited icon
     targetWindow.webContents.send('file-opened', file, content);
 }
 
