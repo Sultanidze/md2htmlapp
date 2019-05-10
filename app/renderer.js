@@ -29,7 +29,6 @@ const updateUserInterface = (isEdited) => {
         title = `${title}*`
     }
     
-    currentWindow.setDocumentEdited(isEdited); // macOS
     currentWindow.setTitle(`${title}`);
 
     saveMarkdownButton.disabled = !isEdited;
@@ -43,7 +42,9 @@ const renderMarkdownToHtml = (markdown) => {
 markdownView.addEventListener('keyup', (event) => {
     const currentContent = event.target.value;
     renderMarkdownToHtml(currentContent);
-    updateUserInterface(currentContent !== originalContent);
+    const isFileEdited = currentContent !== originalContent;
+    currentWindow.setDocumentEdited(isFileEdited); // macOS
+    updateUserInterface(isFileEdited);
 });
 openFileButton.addEventListener('click', () => {
     main.getFileFromUser(currentWindow);
@@ -59,6 +60,12 @@ ipcRenderer.on('file-opened', (e, file, content) => {
 
     updateUserInterface(false);
 
-    markdownView.value = content;
+    markdownView.value = content;;
     renderMarkdownToHtml(content);
+});
+
+window.addEventListener('beforeunload', (e) => {
+    if (markdownView.value !== originalContent){
+        e.returnValue = false;
+    }
 })
