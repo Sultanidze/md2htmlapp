@@ -1,4 +1,5 @@
 const { remote, ipcRenderer} = require('electron');
+const { dialog } = remote;
 const main = remote.require('./main');
 const currentWindow = remote.getCurrentWindow();
 const marked = require('marked');
@@ -66,6 +67,23 @@ ipcRenderer.on('file-opened', (e, file, content) => {
 
 window.addEventListener('beforeunload', (e) => {
     if (markdownView.value !== originalContent){
-        e.returnValue = false;
+        e.preventDefault();
+        // e.returnValue = false;
+        
+        const result = dialog.showMessageBox(currentWindow, {
+            type: 'warning',
+            title: 'Quit with Unsaved Changes?',
+            message: 'Your changes will be lost if you do not save.',
+            buttons: [
+                'Quit Anyway',
+                'Cancel'
+            ],
+            defaultId: 1,
+            cancelId: 1
+        });
+
+        // if (result === 0){
+        //     currentWindow.destroy();
+        // }
     }
 })
