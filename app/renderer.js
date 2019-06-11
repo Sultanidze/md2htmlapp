@@ -61,29 +61,32 @@ ipcRenderer.on('file-opened', (e, file, content) => {
 
     updateUserInterface(false);
 
-    markdownView.value = content;;
+    markdownView.value = content;
     renderMarkdownToHtml(content);
 });
 
-window.addEventListener('beforeunload', (e) => {
+window.addEventListener('beforeunload', event => {
+    event.returnValue = false;
+    
     if (markdownView.value !== originalContent){
-        e.preventDefault();
-        // e.returnValue = false;
-        
-        const result = dialog.showMessageBox(currentWindow, {
-            type: 'warning',
-            title: 'Quit with Unsaved Changes?',
-            message: 'Your changes will be lost if you do not save.',
-            buttons: [
-                'Quit Anyway',
-                'Cancel'
-            ],
-            defaultId: 1,
-            cancelId: 1
-        });
+        setTimeout( () => {
+            const result = dialog.showMessageBox(currentWindow, {
+                type: 'warning',
+                title: 'Quit with Unsaved Changes?',
+                message: 'Your changes will be lost if you do not save.',
+                buttons: [
+                    'Quit Anyway',
+                    'Cancel'
+                ],
+                defaultId: 1,
+                cancelId: 0
+            });
 
-        // if (result === 0){
-        //     currentWindow.destroy();
-        // }
+            if (result === 0){
+                currentWindow.destroy();
+            }
+        }, 0);
+    } else {
+        currentWindow.destroy();
     }
-})
+});
