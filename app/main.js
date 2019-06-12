@@ -25,6 +25,17 @@ const openFile = (targetWindow, files) => {
     targetWindow.webContents.send('file-opened', file, content);
 }
 
+const saveHtml = exports.saveHtml = (targetWindow, content) => {
+    const file = dialog.showSaveDialog(targetWindow, {
+        title: 'Save HTML',
+        defaultPath: app.getPath('documents'),
+        filters: [
+            { name: 'HTML Files', extensions: ['html', 'htm'] }
+        ]
+    });
+    if (!file) return;
+    fs.writeFileSync(file, content);
+};
 const createWindow = exports.createWindow = () => {
     let x, y;
 
@@ -45,15 +56,15 @@ const createWindow = exports.createWindow = () => {
             nodeIntegration: true
         }
     });
-    
+
     // mainWindow.loadURL(`file://${__dirname}//index.html`);
     newWindow.loadFile('app/index.html');
-    
+
     newWindow.once('ready-to-show', () => {
         newWindow.show();
         // mainWindow.webContents.openDevTools();
     });
-    
+
     newWindow.on('closed', () => {
         windows.delete(newWindow);
     });
@@ -75,5 +86,5 @@ app.on('window-all-closed', () => {
     app.quit();
 });
 app.on('activate', (e, hasVisibleWindows) => {
-    if (!hasVisibleWindows) {createWindow(); }
+    if (!hasVisibleWindows) { createWindow(); }
 })

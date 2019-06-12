@@ -53,6 +53,9 @@ openFileButton.addEventListener('click', () => {
 newFileButton.addEventListener('click', () => {
     main.createWindow();
 });
+saveHtmlButton.addEventListener('click', () => {
+    main.saveHtml(currentWindow, htmlView.innerHTML);
+});
 ipcRenderer.on('file-opened', (e, file, content) => {
     filePath = file;
     const tempTextarea = document.createElement('textarea');
