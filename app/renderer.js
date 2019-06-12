@@ -53,6 +53,9 @@ openFileButton.addEventListener('click', () => {
 newFileButton.addEventListener('click', () => {
     main.createWindow();
 });
+saveMarkdownButton.addEventListener('click', () => {
+    main.saveMarkdown(currentWindow, filePath, markdownView.value);
+});
 saveHtmlButton.addEventListener('click', () => {
     main.saveHtml(currentWindow, htmlView.innerHTML);
 });

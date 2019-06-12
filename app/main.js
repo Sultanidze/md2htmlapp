@@ -25,17 +25,33 @@ const openFile = (targetWindow, files) => {
     targetWindow.webContents.send('file-opened', file, content);
 }
 
+const saveMarkdown = exports.saveMarkdown = (targetWindow, filePath, content) => {
+    if (!filePath){
+        filePath = dialog.showSaveDialog(targetWindow, {
+            title: 'Save Markdown',
+            defaultPath: app.getPath('documents'),
+            filters: [
+                { name: 'Markdown Files', extensions: ['md', 'markdown'] }
+            ]
+        });
+    }
+    if (!filePath) return;
+    fs.writeFileSync(filePath, content);
+    openFile(targetWindow, [filePath]);
+};
+
 const saveHtml = exports.saveHtml = (targetWindow, content) => {
-    const file = dialog.showSaveDialog(targetWindow, {
+    const filePath = dialog.showSaveDialog(targetWindow, {
         title: 'Save HTML',
         defaultPath: app.getPath('documents'),
         filters: [
             { name: 'HTML Files', extensions: ['html', 'htm'] }
         ]
     });
-    if (!file) return;
-    fs.writeFileSync(file, content);
+    if (!filePath) return;
+    fs.writeFileSync(filePath, content);
 };
+
 const createWindow = exports.createWindow = () => {
     let x, y;
 
@@ -86,5 +102,5 @@ app.on('window-all-closed', () => {
     app.quit();
 });
 app.on('activate', (e, hasVisibleWindows) => {
-    if (!hasVisibleWindows) { createWindow(); }
+    if (!hasVisibleWindows) { createWindow() }
 })
