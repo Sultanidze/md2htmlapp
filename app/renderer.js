@@ -47,14 +47,19 @@ markdownView.addEventListener('keyup', (event) => {
     currentWindow.setDocumentEdited(isFileEdited); // macOS
     updateUserInterface(isFileEdited);
 });
-openFileButton.addEventListener('click', () => {
-    main.getFileFromUser(currentWindow);
-});
 newFileButton.addEventListener('click', () => {
     main.createWindow();
 });
+openFileButton.addEventListener('click', () => {
+    main.getFileFromUser(currentWindow);
+});
 saveMarkdownButton.addEventListener('click', () => {
     main.saveMarkdown(currentWindow, filePath, markdownView.value);
+});
+revertButton.addEventListener('click', () => {
+    markdownView.value = originalContent;
+    renderMarkdownToHtml(originalContent);
+    updateUserInterface(false);
 });
 saveHtmlButton.addEventListener('click', () => {
     main.saveHtml(currentWindow, htmlView.innerHTML);
