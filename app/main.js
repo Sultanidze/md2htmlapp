@@ -20,13 +20,13 @@ const getFileFromUser = exports.getFileFromUser = (targetWindow) => {
 const openFile = (targetWindow, files) => {
     const file = files[0];
     const content = fs.readFileSync(file).toString();
-
+    app.addRecentDocument(file);
     targetWindow.setRepresentedFilename(file); // macOS file edited icon
     targetWindow.webContents.send('file-opened', file, content);
 }
 
 const saveMarkdown = exports.saveMarkdown = (targetWindow, filePath, content) => {
-    if (!filePath){
+    if (!filePath) {
         filePath = dialog.showSaveDialog(targetWindow, {
             title: 'Save Markdown',
             defaultPath: app.getPath('documents'),
@@ -89,9 +89,22 @@ const createWindow = exports.createWindow = () => {
     return newWindow;
 }
 
+app.on('will-finish-launching', () => {
+    app.on('open-file', (event, file) => {
+        const win = createWindow();
+        win.once('ready-to-show', () => {
+            openFile(win, file);
+        });
+    });
+});
+
 app.on('ready', () => {
     createWindow();
-})
+});
+
+app.on('activate', (e, hasVisibleWindows) => {
+    if (!hasVisibleWindows) { createWindow() }
+});
 
 // macOs specific: not close app if all windows are closed
 app.on('window-all-closed', () => {
@@ -101,6 +114,3 @@ app.on('window-all-closed', () => {
 
     app.quit();
 });
-app.on('activate', (e, hasVisibleWindows) => {
-    if (!hasVisibleWindows) { createWindow() }
-})
