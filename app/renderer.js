@@ -1,4 +1,4 @@
-const { remote, ipcRenderer} = require('electron');
+const { remote, ipcRenderer } = require('electron');
 const { dialog } = remote;
 const main = remote.require('./main');
 const currentWindow = remote.getCurrentWindow();
@@ -22,14 +22,14 @@ const updateUserInterface = (isEdited) => {
     const defaultTitle = document.querySelector('title').innerText || 'markdownTOhtml';
 
     let title = defaultTitle;
-    
+
     if (filePath) {
         title = `${path.basename(filePath)} - ${defaultTitle}`;
     }
     if (isEdited) {
         title = `${title}*`
     }
-    
+
     currentWindow.setTitle(`${title}`);
 
     saveMarkdownButton.disabled = !isEdited;
@@ -37,7 +37,7 @@ const updateUserInterface = (isEdited) => {
 }
 
 const renderMarkdownToHtml = (markdown) => {
-  htmlView.innerHTML = marked(markdown, { sanitize: true });
+    htmlView.innerHTML = marked(markdown, { sanitize: true });
 };
 
 markdownView.addEventListener('keyup', (event) => {
@@ -78,9 +78,9 @@ ipcRenderer.on('file-opened', (e, file, content) => {
 
 window.addEventListener('beforeunload', event => {
     event.returnValue = false;
-    
-    if (markdownView.value !== originalContent){
-        setTimeout( () => {
+
+    if (markdownView.value !== originalContent) {
+        setTimeout(() => {
             const result = dialog.showMessageBox(currentWindow, {
                 type: 'warning',
                 title: 'Quit with Unsaved Changes?',
@@ -93,7 +93,7 @@ window.addEventListener('beforeunload', event => {
                 cancelId: 0
             });
 
-            if (result === 0){
+            if (result === 0) {
                 currentWindow.destroy();
             }
         }, 0);
@@ -101,3 +101,43 @@ window.addEventListener('beforeunload', event => {
         currentWindow.destroy();
     }
 });
+
+// drag and drop
+document.addEventListener('dragstart', event => event.preventDefault());
+document.addEventListener('dragover', event => event.preventDefault());
+document.addEventListener('dragleave', event => event.preventDefault());
+document.addEventListener('drop', event => event.preventDefault());
+
+const getDraggedFile = event => event.dataTransfer.items[0];
+const getDropdedFile = event => event.dataTransfer.files[0];
+
+const fileTypeIsSupported = file => {
+    return ['text/plain', 'text/markdown', ''].includes(file.type); // md files in windows have empty type
+}
+
+markdownView.addEventListener('dragover', event => {
+    const file = getDraggedFile(event);
+
+    if (fileTypeIsSupported(file)) {
+        markdownView.classList.add('drag-over');
+    } else {
+        markdownView.classList.add('drag-error');
+    }
+})
+markdownView.addEventListener('dragleave', event => {
+    markdownView.classList.remove('drag-over');
+    markdownView.classList.remove('drag-error');
+})
+
+markdownView.addEventListener('drop', event => {
+    const file = getDropdedFile(event);
+
+    if (fileTypeIsSupported(file)) {
+        main.openFile(currentWindow, [file.path])
+    } 
+    // else {
+        
+    // }
+    markdownView.classList.remove('drag-over');
+    markdownView.classList.remove('drag-error');
+})
