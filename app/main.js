@@ -2,6 +2,24 @@ const { app, BrowserWindow, dialog } = require('electron');
 const fs = require('fs');
 
 const windows = new Set();
+const fileWatchers = new Map();
+
+const startWatchingFile = (targetWindow, file) => {
+
+    const watcher = new fs.watchFile(file, event => {
+        if (event === 'change') {
+            const content = fs.readFileSync(file);
+            targetWindow.webContents.send('file-opened', file, content);
+        }
+    });
+    fileWatchers.set(targetWindow, watcher);
+}
+
+const stopWatchingFile = (targetWindow) => {
+    const watcher = fileWatchers.get(targetWindow);
+    watcher.close();
+    fileWatchers.delete(targetWindow);
+}
 
 const getFileFromUser = exports.getFileFromUser = (targetWindow) => {
     const files = dialog.showOpenDialog({
@@ -18,7 +36,11 @@ const getFileFromUser = exports.getFileFromUser = (targetWindow) => {
 }
 
 const openFile = exports.openFile = (targetWindow, files) => {
+    if (fileWatchers.get(targetWindow)) {
+        stopWatchingFile(targetWindow);
+    }
     const file = files[0];
+    startWatchingFile(targetWindow, file);
     const content = fs.readFileSync(file).toString();
     app.addRecentDocument(file);
     targetWindow.setRepresentedFilename(file); // macOS file edited icon

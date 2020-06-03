@@ -112,6 +112,7 @@ const getDraggedFile = event => event.dataTransfer.items[0];
 const getDropdedFile = event => event.dataTransfer.files[0];
 
 const fileTypeIsSupported = file => {
+    console.log(file.type);
     return ['text/plain', 'text/markdown', ''].includes(file.type); // md files in windows have empty type
 }
 
